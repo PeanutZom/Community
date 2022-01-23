@@ -2,7 +2,6 @@ package com.xinhao.community.dao;
 
 import com.xinhao.community.entity.User;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,4 +13,10 @@ import org.springframework.stereotype.Component;
 @Mapper
 public interface UserMapper {
     User selectUserById(int id);
+    User selectUserByEmail(String email);
+    User selectUserByUsername(String username);
+    int insertUser(User user);
+    int updateStatus(int id, int status);
+    int updatePassword(int id, String password);
+    int updateHeader(int id, String headerUrl);
 }
