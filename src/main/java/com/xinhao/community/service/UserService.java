@@ -2,6 +2,7 @@ package com.xinhao.community.service;
 
 import com.xinhao.community.entity.User;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -15,4 +16,8 @@ public interface UserService {
     Map<String, Object> register(User user);
 
     int activation(int userId, String code);
+
+    Map<String, Object> login(User user, Date expired);
+
+    void logout(String ticket);
 }

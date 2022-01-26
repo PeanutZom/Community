@@ -1,6 +1,8 @@
 package com.xinhao.community.service.impl;
 
+import com.xinhao.community.dao.LoginTicketMapper;
 import com.xinhao.community.dao.UserMapper;
+import com.xinhao.community.entity.LoginTicket;
 import com.xinhao.community.entity.User;
 import com.xinhao.community.service.UserService;
 import com.xinhao.community.util.CommunityConstant;
@@ -13,10 +15,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * @Xinhao
@@ -39,6 +38,9 @@ public class UserServiceImpl implements UserService, CommunityConstant {
 
     @Value("${server.servlet.context-path}")
     String contextPath;
+
+    @Autowired
+    LoginTicketMapper loginTicketMapper;
 
     @Override
     public User getUserById(int id) {
@@ -117,6 +119,43 @@ public class UserServiceImpl implements UserService, CommunityConstant {
             return ACTIVATION_REPEAT;
         }
 
+    }
+
+    @Override
+    public Map<String, Object> login(User user, Date expired) {
+        Map<String, Object> message = new HashMap<>();
+        User userInDB = userMapper.selectUserByUsername(user.getUsername());
+
+        if(StringUtils.isBlank(user.getUsername())){
+            message.put("usernameMsg","用户名不能为空");
+            return message;
+        }
+        if(StringUtils.isBlank(user.getPassword())){
+            message.put("passwordMsg","密码不能为空");
+        }
+
+        if(userInDB == null){
+            message.put("usernameMsg","用户名不存在");
+            return message;
+        }
+        if(!userInDB.getPassword().equals(CommunityUtil.md5(user.getPassword() + userInDB.getSalt()))){
+            message.put("passwordMsg","密码不正确");
+            return message;
+        }
+        LoginTicket ticket = new LoginTicket();
+        ticket.setUserId(userInDB.getId());
+        ticket.setStatus(0);
+        ticket.setExpired(expired);
+        ticket.setTicket(UUID.randomUUID().toString());
+        loginTicketMapper.insertTicket(ticket);
+        message.put("ticket",ticket.getTicket());
+        return message;
+    }
+
+    @Override
+    public void logout(String ticket) {
+        loginTicketMapper.updateTicketStatus(ticket, 1);
+        return ;
     }
 
 
