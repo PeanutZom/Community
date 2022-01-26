@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinhao.community.dao.LoginTicketMapper">
+
+    <sql id="insertColumn">
+        user_id,ticket,status,expired
+    </sql>
+    
+    <select id="selectTicket" resultType="loginTicket">
+        select * from login_ticket
+        where ticket = #{ticket}
+    </select>
+
+    <update id="updateTicketStatus">
+        update login_ticket set status = #{status}
+        where ticket = #{ticket}
+    </update>
+
+    <insert id="insertTicket" keyProperty="id">
+        insert into login_ticket ( <include refid="insertColumn"></include>)
+        values (#{userId}, #{ticket}, 0, #{expired})
+    </insert>
+
+</mapper>

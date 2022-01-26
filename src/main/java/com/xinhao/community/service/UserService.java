@@ -1,5 +1,6 @@
 package com.xinhao.community.service;
 
+import com.xinhao.community.entity.LoginTicket;
 import com.xinhao.community.entity.User;
 
 import java.util.Date;
@@ -20,4 +21,10 @@ public interface UserService {
     Map<String, Object> login(User user, Date expired);
 
     void logout(String ticket);
+
+    LoginTicket selectLoginTicket(String ticket);
+
+    int updateUserHeaderURL(int userId, String headerUrl);
+
+    int updatePassword(int userId, String password);
 }

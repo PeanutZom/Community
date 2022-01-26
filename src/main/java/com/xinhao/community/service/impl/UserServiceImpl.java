@@ -146,7 +146,7 @@ public class UserServiceImpl implements UserService, CommunityConstant {
         ticket.setUserId(userInDB.getId());
         ticket.setStatus(0);
         ticket.setExpired(expired);
-        ticket.setTicket(UUID.randomUUID().toString());
+        ticket.setTicket(CommunityUtil.generateUUID());
         loginTicketMapper.insertTicket(ticket);
         message.put("ticket",ticket.getTicket());
         return message;
@@ -156,6 +156,24 @@ public class UserServiceImpl implements UserService, CommunityConstant {
     public void logout(String ticket) {
         loginTicketMapper.updateTicketStatus(ticket, 1);
         return ;
+    }
+
+    @Override
+    public LoginTicket selectLoginTicket(String ticket) {
+        return loginTicketMapper.selectTicket(ticket);
+    }
+
+    @Override
+    public int updateUserHeaderURL(int userId, String headerUrl) {
+        return userMapper.updateHeader(userId, headerUrl);
+    }
+
+    @Override
+    public int updatePassword(int userId, String password) {
+        User user = userMapper.selectUserById(userId);
+        String salt = user.getSalt();
+        String newPassword = CommunityUtil.md5(password + salt);
+        return userMapper.updatePassword(userId, newPassword);
     }
 
 
