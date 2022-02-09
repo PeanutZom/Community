@@ -9,6 +9,7 @@ public class PageInfo {
     private int current = 1;
     private int limit = 10;
     private int rows;
+    private String path;
 
     public int getCurrent() {
         return current;
@@ -57,4 +58,11 @@ public class PageInfo {
         return current + 2 <= getPageNum()? current + 2: getPageNum();
     }
 
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
 }

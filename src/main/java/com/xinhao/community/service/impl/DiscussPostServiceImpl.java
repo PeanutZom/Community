@@ -3,8 +3,10 @@ package com.xinhao.community.service.impl;
 import com.xinhao.community.dao.DiscussPostMapper;
 import com.xinhao.community.entity.DiscussPost;
 import com.xinhao.community.service.DiscussPostService;
+import com.xinhao.community.util.SensitiveFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.HtmlUtils;
 
 import java.util.List;
 
@@ -18,6 +20,9 @@ public class DiscussPostServiceImpl implements DiscussPostService {
     @Autowired
     private DiscussPostMapper discussPostMapper;
 
+    @Autowired
+    private SensitiveFilter sensitiveFilter;
+
     @Override
     public List<DiscussPost> findDiscussPost(int userId, int offset, int limit){
         return discussPostMapper.selectDiscussPost(userId, offset, limit);
@@ -26,5 +31,23 @@ public class DiscussPostServiceImpl implements DiscussPostService {
     @Override
     public int findDiscussPostRows(int userId){
         return discussPostMapper.selectDiscussPostRows(userId);
+    }
+
+    @Override
+    public int addDiscussPost(DiscussPost discussPost) {
+
+        //转义HTMl标记
+        discussPost.setTitle(HtmlUtils.htmlEscape(discussPost.getTitle()));
+        discussPost.setContent(HtmlUtils.htmlEscape(discussPost.getContent()));
+
+        //关键词过滤
+        discussPost.setTitle(sensitiveFilter.filter(discussPost.getTitle()));
+        discussPost.setContent(sensitiveFilter.filter(discussPost.getContent()));
+        return discussPostMapper.insertDiscussPost(discussPost);
+    }
+
+    @Override
+    public DiscussPost findDiscussPostById(int id) {
+        return discussPostMapper.selectDiscussPostById(id);
     }
 }

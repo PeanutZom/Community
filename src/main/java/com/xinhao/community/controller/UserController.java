@@ -2,7 +2,10 @@ package com.xinhao.community.controller;
 
 import com.xinhao.community.annotation.LoginRequired;
 import com.xinhao.community.entity.User;
+import com.xinhao.community.service.FollowService;
+import com.xinhao.community.service.LikeService;
 import com.xinhao.community.service.UserService;
+import com.xinhao.community.util.CommunityConstant;
 import com.xinhao.community.util.CommunityUtil;
 import com.xinhao.community.util.HostHolder;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +31,7 @@ import java.io.*;
  */
 @RequestMapping("/user")
 @Controller
-public class UserController {
+public class UserController implements CommunityConstant {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     @Autowired
     UserService userService;
@@ -44,6 +47,12 @@ public class UserController {
 
     @Autowired
     HostHolder hostHolder;
+
+    @Autowired
+    LikeService likeService;
+
+    @Autowired
+    FollowService followService;
 
     @LoginRequired
     @RequestMapping(path = "/setting", method = RequestMethod.GET)
@@ -127,5 +136,22 @@ public class UserController {
         model.addAttribute("target","/login");
         userService.logout(ticket);
         return "/site/operate-result";
+    }
+
+    @RequestMapping(path = "/profile/{userId}", method = RequestMethod.GET)
+    public String getProfilePage(Model model, @PathVariable(value = "userId") int userId){
+
+        User user = userService.getUserById(userId);
+        int likeCount = likeService.findUserLikeCount(userId);
+        model.addAttribute("user",user);
+        model.addAttribute("likeCount", likeCount);
+        long followeeCount = followService.findFolloweeCount(userId, ENTITY_TYPE_USER);
+        long followerCount = followService.findFollowerCount(ENTITY_TYPE_USER, userId);
+        User loginUser = hostHolder.getUser();
+        boolean hasFollowed = loginUser == null? false : followService.hasFollowed(loginUser.getId(), ENTITY_TYPE_USER, userId);
+        model.addAttribute("followeeCount", followeeCount);
+        model.addAttribute("follwerCount", followerCount);
+        model.addAttribute("hasFollowed", hasFollowed);
+        return "/site/profile";
     }
 }

@@ -10,6 +10,8 @@ import java.util.List;
  * @Descrption
  */
 public interface DiscussPostService {
-    public List<DiscussPost> findDiscussPost(int userId, int offset, int limit);
-    public int findDiscussPostRows(int userId);
+    List<DiscussPost> findDiscussPost(int userId, int offset, int limit);
+    int findDiscussPostRows(int userId);
+    int addDiscussPost(DiscussPost discussPost);
+    DiscussPost findDiscussPostById(int id);
 }

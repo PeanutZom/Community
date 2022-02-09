@@ -4,6 +4,7 @@ import com.xinhao.community.entity.LoginTicket;
 import com.xinhao.community.entity.User;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,4 +28,8 @@ public interface UserService {
     int updateUserHeaderURL(int userId, String headerUrl);
 
     int updatePassword(int userId, String password);
+
+    User getUserByUsername(String username);
+
+
 }

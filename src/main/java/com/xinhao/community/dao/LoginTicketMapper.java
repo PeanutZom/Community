@@ -11,6 +11,7 @@ import java.util.Date;
  * @Descrption
  */
 @Mapper
+@Deprecated
 public interface LoginTicketMapper {
     public LoginTicket selectTicket(String ticket);
     public int insertTicket(LoginTicket ticket);
