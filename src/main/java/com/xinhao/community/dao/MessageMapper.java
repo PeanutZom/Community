@@ -19,4 +19,8 @@ public interface MessageMapper {
     int getUnreadMessageCount(int userId, String conversationId);
     int insertMessage(Message message);
     int updateMessageStatus(List<Integer> messageIds, int status);
+    int getUnreadNoticeCount(int userId, String topic);
+    int getNoticeCount(int userId, String topic);
+    Message selectLatestUnreadMessage(int userId, String topic);
+    List<Message> selectNotices(int userId, String topic, int offset, int limit);
 }

@@ -2,6 +2,7 @@ package com.xinhao.community.config;
 
 import com.xinhao.community.controller.interceptor.LoginCheckInterceptor;
 import com.xinhao.community.controller.interceptor.LoginTicketInterceptor;
+import com.xinhao.community.controller.interceptor.MessageInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -20,9 +21,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
     LoginCheckInterceptor loginCheckInterceptor;
 
+    @Autowired
+    MessageInterceptor messageInterceptor;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginTicketInterceptor).excludePathPatterns("/**/*.css","/**/*.js","/**/*.jpg","/**/*.png");
         registry.addInterceptor(loginCheckInterceptor).excludePathPatterns("/**/*.css","/**/*.js","/**/*.jpg","/**/*.png");
+        registry.addInterceptor(messageInterceptor).excludePathPatterns("/**/*.css","/**/*.js","/**/*.jpg","/**/*.png");
     }
 }

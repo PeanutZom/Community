@@ -1,7 +1,9 @@
 package com.xinhao.community.controller;
 
+import com.xinhao.community.entity.Event;
 import com.xinhao.community.entity.PageInfo;
 import com.xinhao.community.entity.User;
+import com.xinhao.community.event.EventProducer;
 import com.xinhao.community.service.FollowService;
 import com.xinhao.community.service.UserService;
 import com.xinhao.community.util.CommunityConstant;
@@ -34,11 +36,23 @@ public class FollowController implements CommunityConstant {
     @Autowired
     UserService userService;
 
+    @Autowired
+    EventProducer eventProducer;
+
     @ResponseBody
     @RequestMapping(path = "/follow", method = RequestMethod.POST)
     public String follow(int entityType, int entityId){
         User user = hostHolder.getUser();
         followService.follow(user.getId(), entityType, entityId);
+        //向被关注者发送通知
+        Event event = new Event()
+                .setTopic(TOPIC_FOLLOW)
+                .setUserId(user.getId())
+                .setEntityId(entityId)
+                .setEntityType(entityType)
+                .setEntityUserId(entityId);
+        eventProducer.fireEvent(event);
+
         return CommunityUtil.getJsonString(0, "关注成功");
     }
 

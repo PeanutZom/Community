@@ -19,4 +19,8 @@ public interface MessageService {
     int findUnreadMessageCount(int userId, String conversationId);
     int createMessage(Message message);
     int readMessage(List<Integer> messageIds);
+    int findNoticeRows(int userId, String topic);
+    int findUnreadNoticeCount(int userId, String topic);
+    Message findLatestUnreadNotice(int userId, String topic);
+    List<Message> findNotices(int userId, String topic, int offset, int limit);
 }

@@ -3,7 +3,9 @@ package com.xinhao.community.controller;
 import com.xinhao.community.annotation.LoginRequired;
 import com.xinhao.community.entity.Comment;
 import com.xinhao.community.entity.DiscussPost;
+import com.xinhao.community.entity.Event;
 import com.xinhao.community.entity.User;
+import com.xinhao.community.event.EventProducer;
 import com.xinhao.community.service.CommentService;
 import com.xinhao.community.service.DiscussPostService;
 import com.xinhao.community.service.LikeService;
@@ -40,11 +42,13 @@ public class LikeController implements CommunityConstant {
     @Autowired
     CommentService commentService;
 
+    @Autowired
+    EventProducer eventProducer;
 
 
     @RequestMapping(value = "/like", method = RequestMethod.POST)
     @ResponseBody
-    public String like(int entityType, int entityId){
+    public String like(int entityType, int entityId, int postId){
         User loginUser = hostHolder.getUser();
 
         if(loginUser == null){
@@ -60,8 +64,24 @@ public class LikeController implements CommunityConstant {
         }
         likeService.like(entityType,entityId,loginUser.getId(),entityUserId);
         Map<String, Object> map = new HashMap<>();
-        map.put("likeCount",likeService.findEntityLikeCount(entityType, entityId));
-        map.put("likeStatus", likeService.findEntityLikeStatus(loginUser.getId(), entityType, entityId));
+        long likeCount = likeService.findEntityLikeCount(entityType, entityId);
+        int likeStatus = likeService.findEntityLikeStatus(loginUser.getId(), entityType, entityId);
+        map.put("likeCount",likeCount);
+        map.put("likeStatus", likeStatus);
+
+        //向被点赞的人发送通知
+        if (likeStatus == 1){
+            Event event = new Event()
+                    .setTopic(TOPIC_LIKE)
+                    .setUserId(loginUser.getId())
+                    .setEntityType(entityType)
+                    .setEntityId(entityId)
+                    .setEntityUserId(entityUserId)
+                    .setData("postId", postId);
+            eventProducer.fireEvent(event);
+        }
+
+
         return CommunityUtil.getJsonString(0, null, map);
     }
 
