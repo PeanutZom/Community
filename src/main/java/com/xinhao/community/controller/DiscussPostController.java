@@ -1,10 +1,8 @@
 package com.xinhao.community.controller;
 
 import com.xinhao.community.annotation.LoginRequired;
-import com.xinhao.community.entity.Comment;
-import com.xinhao.community.entity.DiscussPost;
-import com.xinhao.community.entity.PageInfo;
-import com.xinhao.community.entity.User;
+import com.xinhao.community.entity.*;
+import com.xinhao.community.event.EventProducer;
 import com.xinhao.community.service.CommentService;
 import com.xinhao.community.service.DiscussPostService;
 import com.xinhao.community.service.LikeService;
@@ -46,6 +44,9 @@ public class DiscussPostController implements CommunityConstant {
     @Autowired
     LikeService likeService;
 
+    @Autowired
+    EventProducer eventProducer;
+
     @LoginRequired
     @ResponseBody
     @RequestMapping(path = "/create",method = RequestMethod.POST)
@@ -55,6 +56,13 @@ public class DiscussPostController implements CommunityConstant {
         post.setUserId(user.getId());
         discussPostService.addDiscussPost(post);
         //报错将来统一处理
+
+        Event event = new Event().setTopic(TOPIC_PUBLISH)
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(post.getId())
+                .setUserId(user.getId());
+        eventProducer.fireEvent(event);
+
         return CommunityUtil.getJsonString(0,"发布成功");
     }
 
