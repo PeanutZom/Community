@@ -1,5 +1,6 @@
 package com.xinhao.community.config;
 
+import com.xinhao.community.controller.interceptor.DataInterceptor;
 import com.xinhao.community.controller.interceptor.LoginCheckInterceptor;
 import com.xinhao.community.controller.interceptor.LoginTicketInterceptor;
 import com.xinhao.community.controller.interceptor.MessageInterceptor;
@@ -24,10 +25,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
     MessageInterceptor messageInterceptor;
 
+    @Autowired
+    DataInterceptor dataInterceptor;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginTicketInterceptor).excludePathPatterns("/**/*.css","/**/*.js","/**/*.jpg","/**/*.png");
 //        registry.addInterceptor(loginCheckInterceptor).excludePathPatterns("/**/*.css","/**/*.js","/**/*.jpg","/**/*.png");
         registry.addInterceptor(messageInterceptor).excludePathPatterns("/**/*.css","/**/*.js","/**/*.jpg","/**/*.png");
+        registry.addInterceptor(dataInterceptor).excludePathPatterns("/**/*.css","/**/*.js","/**/*.jpg","/**/*.png");
+
     }
 }
