@@ -2,7 +2,9 @@ package com.xinhao.community.service;
 
 import com.xinhao.community.entity.LoginTicket;
 import com.xinhao.community.entity.User;
+import org.springframework.security.core.GrantedAuthority;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -31,5 +33,6 @@ public interface UserService {
 
     User getUserByUsername(String username);
 
+    public Collection<? extends GrantedAuthority> getAuthorities(int userId);
 
 }

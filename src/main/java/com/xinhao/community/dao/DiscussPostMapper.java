@@ -16,9 +16,12 @@ import java.util.List;
 @Component
 @Mapper
 public interface DiscussPostMapper {
-    public List<DiscussPost> selectDiscussPost(int userId, int offset, int limit);
-    public int selectDiscussPostRows(@Param("userId") int userId);
-    public int insertDiscussPost(DiscussPost discussPost);
-    public DiscussPost selectDiscussPostById(int id);
-    public int updateDiscussPostCommentCount(int id, int commentCount);
+    List<DiscussPost> selectDiscussPost(int userId, int offset, int limit);
+    int selectDiscussPostRows(@Param("userId") int userId);
+    int insertDiscussPost(DiscussPost discussPost);
+    DiscussPost selectDiscussPostById(int id);
+    int updateDiscussPostCommentCount(int id, int commentCount);
+    int updateStatus(int id, int status);
+    int updateType(int id, int type);
+
 }
