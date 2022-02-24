@@ -10,7 +10,9 @@ import com.xinhao.community.service.UserService;
 import com.xinhao.community.util.CommunityConstant;
 import com.xinhao.community.util.CommunityUtil;
 import com.xinhao.community.util.HostHolder;
+import com.xinhao.community.util.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,6 +49,9 @@ public class DiscussPostController implements CommunityConstant {
     @Autowired
     EventProducer eventProducer;
 
+    @Autowired
+    RedisTemplate redisTemplate;
+
     @LoginRequired
     @ResponseBody
     @RequestMapping(path = "/create",method = RequestMethod.POST)
@@ -62,6 +67,9 @@ public class DiscussPostController implements CommunityConstant {
                 .setEntityId(post.getId())
                 .setUserId(user.getId());
         eventProducer.fireEvent(event);
+
+        //将帖子ID加入redis缓存，以刷新score
+        redisTemplate.opsForSet().add(RedisKeyUtil.getPostToFreshKey(), post.getId());
 
         return CommunityUtil.getJsonString(0,"发布成功");
     }
@@ -160,10 +168,13 @@ public class DiscussPostController implements CommunityConstant {
                 .setUserId(hostHolder.getUser().getId());
         eventProducer.fireEvent(event);
 
+        //把帖子加入redis待刷新集合
+        redisTemplate.opsForSet().add(RedisKeyUtil.getPostToFreshKey(), id);
+
         return CommunityUtil.getJsonString(0);
     }
 
-    //置顶
+    //删除
     @RequestMapping(path = "/delete", method = RequestMethod.POST)
     @ResponseBody
     public String setDelete(int id){

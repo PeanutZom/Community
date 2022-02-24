@@ -13,7 +13,9 @@ import com.xinhao.community.service.UserService;
 import com.xinhao.community.util.CommunityConstant;
 import com.xinhao.community.util.CommunityUtil;
 import com.xinhao.community.util.HostHolder;
+import com.xinhao.community.util.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -44,6 +46,9 @@ public class LikeController implements CommunityConstant {
 
     @Autowired
     EventProducer eventProducer;
+
+    @Autowired
+    RedisTemplate redisTemplate;
 
 
     @RequestMapping(value = "/like", method = RequestMethod.POST)
@@ -81,6 +86,10 @@ public class LikeController implements CommunityConstant {
             eventProducer.fireEvent(event);
         }
 
+        //把帖子加入redis待刷新集合
+        if(entityType == ENTITY_TYPE_POST){
+            redisTemplate.opsForSet().add(RedisKeyUtil.getPostToFreshKey(), postId);
+        }
 
         return CommunityUtil.getJsonString(0, null, map);
     }

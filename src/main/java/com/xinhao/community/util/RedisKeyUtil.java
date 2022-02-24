@@ -20,6 +20,7 @@ public class RedisKeyUtil {
     private static final String PREFIX_UV = "uv";
     private static final String PREFIX_DAU = "dau";
     private static SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
+    private static final String PREFIX_POST = "post";
 
     public static String getEntityLikeKey(int entityType, int entityId){
         return PREFIX_ENTITY_LIKE + SPLIT + entityType + SPLIT + entityId;
@@ -60,6 +61,11 @@ public class RedisKeyUtil {
     }
     public static String getDauKey(Date start, Date end){
         return PREFIX_DAU + SPLIT + df.format(start) + SPLIT + df.format(end);
+    }
+
+    //需要更改分数的帖子
+    public static String getPostToFreshKey(){
+        return PREFIX_POST + SPLIT + "score";
     }
 
 }

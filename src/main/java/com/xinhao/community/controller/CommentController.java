@@ -11,7 +11,9 @@ import com.xinhao.community.service.DiscussPostService;
 import com.xinhao.community.service.UserService;
 import com.xinhao.community.util.CommunityConstant;
 import com.xinhao.community.util.HostHolder;
+import com.xinhao.community.util.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +41,9 @@ public class CommentController implements CommunityConstant {
 
     @Autowired
     DiscussPostService discussPostService;
+
+    @Autowired
+    RedisTemplate redisTemplate;
 
     @LoginRequired
     @RequestMapping(path = "/add/{postId}", method = RequestMethod.POST)
@@ -72,7 +77,12 @@ public class CommentController implements CommunityConstant {
                     .setEntityType(ENTITY_TYPE_POST)
                     .setEntityId(comment.getEntityId());
             eventProducer.fireEvent(event);
+
+            //把帖子加入redis待刷新缓存
+            redisTemplate.opsForSet().add(RedisKeyUtil.getPostToFreshKey(), postId);
         }
+
+
 
         return "redirect:/discuss/detail/"+postId;
     }

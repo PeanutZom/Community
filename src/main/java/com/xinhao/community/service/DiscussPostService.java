@@ -10,10 +10,11 @@ import java.util.List;
  * @Descrption
  */
 public interface DiscussPostService {
-    List<DiscussPost> findDiscussPost(int userId, int offset, int limit);
+    List<DiscussPost> findDiscussPost(int userId, int offset, int limit, int orderMode);
     int findDiscussPostRows(int userId);
     int addDiscussPost(DiscussPost discussPost);
     DiscussPost findDiscussPostById(int id);
     int updateType(int id, int type);
     int updateStatus(int id, int status);
+    int updateScore(int postId, double score);
 }

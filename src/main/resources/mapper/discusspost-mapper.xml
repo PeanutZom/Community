@@ -16,7 +16,12 @@
         <if test="userId != 0">
             and user_id = #{userId}
         </if>
-        order by type DESC, create_time DESC
+        <if test="orderMode == 0">
+            order by type DESC, create_time DESC
+        </if>
+        <if test="orderMode == 1">
+            order by type DESC, score DESC, create_time DESC
+        </if>
         limit #{offset}, #{limit}
     </select>
 
@@ -48,6 +53,11 @@
     <update id="updateType">
         update discuss_post
         set type = #{type}
+        where id = #{id}
+    </update>
+    <update id="updateScore">
+        update discuss_post
+        set score = #{score}
         where id = #{id}
     </update>
 
